@@ -17,7 +17,7 @@ class WindowCropper:
         :return:
         An image of width margin in which location is centered
         """
-        arm_length = (self.margin - 1) / 2
+        arm_length = int((self.margin - 1) / 2)
         return image[:,location-arm_length:location+arm_length]
 
     def crop_positives(self, image, boundary_locations):
