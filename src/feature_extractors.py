@@ -9,40 +9,7 @@ from skimage.transform import rescale
 MIN_HEIGHT = 300
 
 
-class WindowCropper:
-    """
-    A tool to crop positive and negative boundary images from a given shelf image
-    """
-    def __init__(self, margin):
-        # make sure the margin is odd
-        assert margin % 2 == 1, "margin ({}) is not odd, please choose an odd margin ".format(margin)
-        self.margin = margin
-        self.arm_length = int((self.margin - 1) / 2)
 
-    def crop_all(self, image, boundary_locations):
-        return self.crop_positives(image, boundary_locations), self.crop_negatives(image, boundary_locations)
-
-    def crop_single(self, image, location):
-        """
-        :param image: numpy array, the whole shelf image to be cropped
-        :param location: integer, the index of the center of crop
-        :return:
-        An image of width margin in which location is centered
-        """
-        if ((location - self.arm_length) >= 0) & ((location + self.arm_length) < image.shape[1]):
-            crop = image[:, location - self.arm_length:location + self.arm_length]
-        elif (location + self.arm_length) >= image.shape[1]:
-            crop = image[:, (-self.margin+1):]
-        else:
-            crop = image[:, :self.margin-1]
-        return crop
-
-    def crop_positives(self, image, boundary_locations):
-        return [self.crop_single(image, int(location)) for location in boundary_locations]
-
-    def crop_negatives(self, image, boundary_locations):
-        return [self.crop_single(image, int((boundary_locations[i] + boundary_locations[i+1])/2))
-                for i in range(len(boundary_locations) - 1)]
 
 
 class WCFeatureExtractor:
@@ -78,6 +45,4 @@ class HOGExtractor(WCFeatureExtractor):
 
         return filename, np.vstack(list(map(lambda crop: hog(crop, block_norm='L2-Hys', cells_per_block=(3, 1)),
                                             pos+neg))), np.array([1]*len(pos)+[0]*len(neg))
-
-
 

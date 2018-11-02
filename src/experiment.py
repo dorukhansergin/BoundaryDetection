@@ -8,6 +8,7 @@ from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score
 
+
 class Experiment:
     def __init__(self, images_dir, column_annotations_dir, cv=5, n_jobs=1):
 
@@ -25,11 +26,10 @@ class Experiment:
         self.n_jobs = n_jobs
         self.features_dict = None
         self.labels_dict = None
+        self.pipe = None
 
     def set_pipeline(self, pipe_list):
         self.pipe = Pipeline(pipe_list)
-
-
 
 
 class WCExperiment(Experiment):
@@ -61,7 +61,7 @@ class WCExperiment(Experiment):
                     inner_X_trn, inner_y_trn = self.stack_X_and_y(inner_files_trn)
                     inner_X_tst, inner_y_tst = self.stack_X_and_y(inner_files_tst)
                     self.pipe.fit(inner_X_trn, inner_y_trn)
-                    # TODO: make other metrics abailable, maybe
+                    # TODO: make other metrics available, maybe
                     this_inner_fold_score = roc_auc_score(inner_y_tst, self.pipe.predict(inner_X_tst))
                     print(this_inner_fold_score)
                     this_param_scores.append(this_inner_fold_score)
